@@ -21,12 +21,14 @@ export function App(): JSX.Element {
   const [errors, setErrors] = useState<FieldErrors>({});
   const [success, setSuccess] = useState(false);
   const [failure, setFailure] = useState<string | null>(null);
+  const [sending, setSending] = useState(false);
 
   async function onSubmit(event: FormEvent<HTMLFormElement>): Promise<void> {
     event.preventDefault();
     const form = event.currentTarget;
     setSuccess(false);
     setFailure(null);
+    setSending(true);
     try {
       const res = await fetch(`${API_URL}/contact`, {
         method: 'POST',
@@ -44,6 +46,8 @@ export function App(): JSX.Element {
       form.reset();
     } catch {
       setFailure('Something went wrong. Please try again.');
+    } finally {
+      setSending(false);
     }
   }
 
@@ -69,7 +73,9 @@ export function App(): JSX.Element {
           <textarea name="message" rows={5} aria-invalid={!!errors.message} />
           {errors.message && <span className="error">{errors.message}</span>}
         </label>
-        <button type="submit">Send message</button>
+        <button type="submit" disabled={sending}>
+          {sending ? 'Sending…' : 'Send message'}
+        </button>
       </form>
     </main>
   );
