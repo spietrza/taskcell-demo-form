@@ -5,6 +5,13 @@ import { App } from './app.js';
 
 afterEach(() => vi.unstubAllGlobals());
 
+function stubValidationError(...message: string[]): void {
+  vi.stubGlobal(
+    'fetch',
+    vi.fn().mockResolvedValue(new Response(JSON.stringify({ message }), { status: 400 })),
+  );
+}
+
 it('renders the form', () => {
   render(<App />);
   expect(screen.getByLabelText('Name')).toBeInTheDocument();
@@ -14,13 +21,19 @@ it('renders the form', () => {
 });
 
 it('shows a field error from a 400 response', async () => {
-  vi.stubGlobal(
-    'fetch',
-    vi.fn().mockResolvedValue(
-      new Response(JSON.stringify({ message: ['name should not be empty'] }), { status: 400 }),
-    ),
-  );
+  stubValidationError('name should not be empty');
   render(<App />);
   await userEvent.click(screen.getByRole('button', { name: 'Send message' }));
   expect(await screen.findByText('name should not be empty')).toBeInTheDocument();
+});
+
+it('shows the server email error under the Email field', async () => {
+  stubValidationError('email must be an email');
+  render(<App />);
+  await userEvent.type(screen.getByLabelText('Email'), 'not-an-email');
+  await userEvent.click(screen.getByRole('button', { name: 'Send message' }));
+  const error = await screen.findByText('email must be an email');
+  const email = screen.getByRole('textbox', { name: /^Email/ });
+  expect(email.closest('label')).toContainElement(error);
+  expect(email).toHaveAttribute('aria-invalid', 'true');
 });
