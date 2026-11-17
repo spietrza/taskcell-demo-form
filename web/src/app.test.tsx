@@ -24,3 +24,14 @@ it('shows a field error from a 400 response', async () => {
   await userEvent.click(screen.getByRole('button', { name: 'Send message' }));
   expect(await screen.findByText('name should not be empty')).toBeInTheDocument();
 });
+
+it('posts the email trimmed and lowercased', async () => {
+  const fetchMock = vi.fn().mockResolvedValue(new Response('{}', { status: 201 }));
+  vi.stubGlobal('fetch', fetchMock);
+  render(<App />);
+  await userEvent.type(screen.getByLabelText('Email'), '  Jane.Doe@Example.COM  ');
+  await userEvent.click(screen.getByRole('button', { name: 'Send message' }));
+  expect(fetchMock).toHaveBeenCalledOnce();
+  const init = fetchMock.mock.calls[0]![1] as RequestInit;
+  expect(JSON.parse(init.body as string)).toMatchObject({ email: 'jane.doe@example.com' });
+});

@@ -28,10 +28,12 @@ export function App(): JSX.Element {
     setSuccess(false);
     setFailure(null);
     try {
+      const data = Object.fromEntries(new FormData(form));
+      if (typeof data.email === 'string') data.email = data.email.trim().toLowerCase();
       const res = await fetch(`${API_URL}/contact`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(Object.fromEntries(new FormData(form))),
+        body: JSON.stringify(data),
       });
       if (res.status === 400) {
         const body: { message: string[] | string } = await res.json();
