@@ -55,7 +55,9 @@ export function App(): JSX.Element {
         {success && <p role="status" className="success">Thanks! Your message was sent.</p>}
         {failure && <p role="alert" className="error">{failure}</p>}
         <label>
-          Name
+          <span>
+            Name <span className="required" aria-hidden="true">*</span>
+          </span>
           <input name="name" type="text" autoComplete="name" aria-invalid={!!errors.name} />
           {errors.name && <span className="error">{errors.name}</span>}
         </label>

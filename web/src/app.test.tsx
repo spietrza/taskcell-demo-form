@@ -7,10 +7,16 @@ afterEach(() => vi.unstubAllGlobals());
 
 it('renders the form', () => {
   render(<App />);
-  expect(screen.getByLabelText('Name')).toBeInTheDocument();
+  expect(screen.getByLabelText(/^Name/)).toBeInTheDocument();
   expect(screen.getByLabelText('Email')).toBeInTheDocument();
   expect(screen.getByLabelText('Message')).toBeInTheDocument();
   expect(screen.getByRole('button', { name: 'Send message' })).toBeInTheDocument();
+});
+
+it('marks the name label as required with an asterisk', () => {
+  render(<App />);
+  expect(screen.getByLabelText(/^Name/).closest('label')).toHaveTextContent(/^Name \*$/);
+  expect(screen.getByText('*')).toHaveClass('required');
 });
 
 it('shows a field error from a 400 response', async () => {
