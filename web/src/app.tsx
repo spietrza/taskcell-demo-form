@@ -61,7 +61,7 @@ export function App(): JSX.Element {
         </label>
         <label>
           Email
-          <input name="email" type="text" autoComplete="email" aria-invalid={!!errors.email} />
+          <input name="email" type="text" autoComplete="email" placeholder="you@example.com" aria-invalid={!!errors.email} />
           {errors.email && <span className="error">{errors.email}</span>}
         </label>
         <label>

@@ -24,3 +24,8 @@ it('shows a field error from a 400 response', async () => {
   await userEvent.click(screen.getByRole('button', { name: 'Send message' }));
   expect(await screen.findByText('name should not be empty')).toBeInTheDocument();
 });
+
+it('shows a placeholder on the email field', () => {
+  render(<App />);
+  expect(screen.getByLabelText('Email')).toHaveAttribute('placeholder', 'you@example.com');
+});
