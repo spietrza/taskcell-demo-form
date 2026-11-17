@@ -26,6 +26,15 @@ describe('contact', () => {
     expect(list.body).toEqual([res.body]);
   });
 
+  it('stores the email in lowercase', async () => {
+    const body = { name: 'Ada', email: 'Ada@Example.COM', message: 'Hello' };
+    const res = await request(app.getHttpServer()).post('/contact').send(body).expect(201);
+    expect(res.body).toEqual({ id: 1, ...body, email: 'ada@example.com' });
+
+    const list = await request(app.getHttpServer()).get('/contact').expect(200);
+    expect(list.body).toEqual([res.body]);
+  });
+
   it('rejects an empty name with 400', async () => {
     const res = await request(app.getHttpServer())
       .post('/contact')

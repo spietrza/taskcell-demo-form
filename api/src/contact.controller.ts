@@ -11,7 +11,11 @@ export class ContactController {
 
   @Post()
   create(@Body() dto: CreateContactDto): Contact {
-    const contact: Contact = { id: this.contacts.length + 1, ...dto };
+    const contact: Contact = {
+      id: this.contacts.length + 1,
+      ...dto,
+      email: dto.email.toLowerCase(),
+    };
     this.contacts.push(contact);
     return contact;
   }
