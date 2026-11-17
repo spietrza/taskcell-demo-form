@@ -33,4 +33,15 @@ describe('contact', () => {
       .expect(400);
     expect(res.body.message).toContain('name should not be empty');
   });
+
+  it('rejects an invalid email with 400', async () => {
+    const res = await request(app.getHttpServer())
+      .post('/contact')
+      .send({ name: 'Ada', email: 'not-an-email', message: 'Hello' })
+      .expect(400);
+    expect(res.body.message).toContain('email must be an email');
+
+    const list = await request(app.getHttpServer()).get('/contact').expect(200);
+    expect(list.body).toEqual([]);
+  });
 });
