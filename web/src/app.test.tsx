@@ -13,6 +13,11 @@ it('renders the form', () => {
   expect(screen.getByRole('button', { name: 'Send message' })).toBeInTheDocument();
 });
 
+it('focuses the name field on mount', () => {
+  render(<App />);
+  expect(screen.getByLabelText('Name')).toHaveFocus();
+});
+
 it('shows a field error from a 400 response', async () => {
   vi.stubGlobal(
     'fetch',

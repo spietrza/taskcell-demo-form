@@ -56,7 +56,7 @@ export function App(): JSX.Element {
         {failure && <p role="alert" className="error">{failure}</p>}
         <label>
           Name
-          <input name="name" type="text" autoComplete="name" aria-invalid={!!errors.name} />
+          <input autoFocus name="name" type="text" autoComplete="name" aria-invalid={!!errors.name} />
           {errors.name && <span className="error">{errors.name}</span>}
         </label>
         <label>
