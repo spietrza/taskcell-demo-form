@@ -20,6 +20,14 @@ it('renders the form', () => {
   expect(screen.getByRole('button', { name: 'Send message' })).toBeInTheDocument();
 });
 
+it('links to the privacy policy under the submit button', () => {
+  render(<App />);
+  const link = screen.getByRole('link', { name: 'privacy policy' });
+  expect(link).toHaveAttribute('href', '/privacy');
+  const button = screen.getByRole('button', { name: 'Send message' });
+  expect(button.compareDocumentPosition(link) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+});
+
 it('shows a field error from a 400 response', async () => {
   stubValidationError('name should not be empty');
   render(<App />);
