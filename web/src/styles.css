@@ -12,7 +12,8 @@ form {
 }
 h1 { margin: 0; font-size: 1.5rem; }
 .lead { margin: 0; color: #6b7280; }
-label { display: grid; gap: 0.35rem; font-size: 0.875rem; font-weight: 600; }
+label, .field { display: grid; gap: 0.35rem; }
+label { font-size: 0.875rem; font-weight: 600; }
 input, textarea {
   font: inherit; font-weight: 400; padding: 0.6rem 0.75rem;
   border: 1px solid #d1d5db; border-radius: 8px; resize: vertical;
@@ -24,5 +25,7 @@ button {
   color: #fff; background: #4f46e5; cursor: pointer;
 }
 button:hover { background: #4338ca; }
+.counter { justify-self: end; color: #6b7280; font-size: 0.8rem; }
+.counter.over-limit { color: #dc2626; }
 .error { color: #dc2626; font-size: 0.8rem; font-weight: 400; margin: 0; }
 .success { color: #047857; background: #ecfdf5; padding: 0.6rem 0.75rem; border-radius: 8px; margin: 0; }

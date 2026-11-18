@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { afterEach, expect, it, vi } from 'vitest';
 import { App } from './app.js';
@@ -36,4 +36,23 @@ it('shows the server email error under the Email field', async () => {
   const error = await screen.findByText('email must be an email');
   expect(email.closest('label')).toContainElement(error);
   expect(email).toHaveAttribute('aria-invalid', 'true');
+});
+
+it('shows a message character counter that turns red over the limit', async () => {
+  render(<App />);
+  const message = screen.getByLabelText('Message');
+  const counter = screen.getByText('0 / 1000');
+  expect(message).toHaveAccessibleDescription('0 / 1000');
+  expect(counter).not.toHaveClass('over-limit');
+
+  await userEvent.type(message, 'Hello');
+  expect(counter).toHaveTextContent('5 / 1000');
+
+  fireEvent.change(message, { target: { value: 'a'.repeat(1000) } });
+  expect(counter).toHaveTextContent('1000 / 1000');
+  expect(counter).not.toHaveClass('over-limit');
+
+  fireEvent.change(message, { target: { value: 'a'.repeat(1001) } });
+  expect(counter).toHaveTextContent('1001 / 1000');
+  expect(counter).toHaveClass('over-limit');
 });
