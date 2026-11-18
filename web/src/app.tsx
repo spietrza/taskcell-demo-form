@@ -70,6 +70,9 @@ export function App(): JSX.Element {
           {errors.message && <span className="error">{errors.message}</span>}
         </label>
         <button type="submit">Send message</button>
+        <p className="privacy">
+          We only use your details to reply to your message. See our <a href="/privacy">privacy policy</a>.
+        </p>
       </form>
     </main>
   );
