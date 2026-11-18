@@ -37,3 +37,14 @@ it('shows the server email error under the Email field', async () => {
   expect(email.closest('label')).toContainElement(error);
   expect(email).toHaveAttribute('aria-invalid', 'true');
 });
+
+it('trims spaces around the name before sending', async () => {
+  const fetchMock = vi.fn().mockResolvedValue(new Response(null, { status: 201 }));
+  vi.stubGlobal('fetch', fetchMock);
+  render(<App />);
+  await userEvent.type(screen.getByLabelText('Name'), '  Ann  ');
+  await userEvent.click(screen.getByRole('button', { name: 'Send message' }));
+  expect(await screen.findByRole('status')).toBeInTheDocument();
+  const [, init] = fetchMock.mock.calls[0] as [string, RequestInit];
+  expect(JSON.parse(init.body as string)).toMatchObject({ name: 'Ann' });
+});
