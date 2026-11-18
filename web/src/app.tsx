@@ -7,6 +7,9 @@ type FieldErrors = Partial<Record<Field, string>>;
 
 const FIELDS: Field[] = ['name', 'email', 'message'];
 
+/** Mirrors `@MaxLength(1000)` on `CreateContactDto.message` in the API. */
+const MESSAGE_MAX_LENGTH = 1000;
+
 /** Maps class-validator messages ("name should not be empty") to their field. */
 function toFieldErrors(messages: string[]): FieldErrors {
   const errors: FieldErrors = {};
@@ -21,6 +24,7 @@ export function App(): JSX.Element {
   const [errors, setErrors] = useState<FieldErrors>({});
   const [success, setSuccess] = useState(false);
   const [failure, setFailure] = useState<string | null>(null);
+  const [messageLength, setMessageLength] = useState(0);
 
   async function onSubmit(event: FormEvent<HTMLFormElement>): Promise<void> {
     event.preventDefault();
@@ -42,6 +46,7 @@ export function App(): JSX.Element {
       setErrors({});
       setSuccess(true);
       form.reset();
+      setMessageLength(0);
     } catch {
       setFailure('Something went wrong. Please try again.');
     }
@@ -64,11 +69,25 @@ export function App(): JSX.Element {
           <input name="email" type="text" autoComplete="email" aria-invalid={!!errors.email} />
           {errors.email && <span className="error">{errors.email}</span>}
         </label>
-        <label>
-          Message
-          <textarea name="message" rows={5} aria-invalid={!!errors.message} />
-          {errors.message && <span className="error">{errors.message}</span>}
-        </label>
+        <div className="field">
+          <label>
+            Message
+            <textarea
+              name="message"
+              rows={5}
+              aria-invalid={!!errors.message}
+              aria-describedby="message-count"
+              onChange={(e) => setMessageLength(e.target.value.length)}
+            />
+            {errors.message && <span className="error">{errors.message}</span>}
+          </label>
+          <span
+            id="message-count"
+            className={messageLength > MESSAGE_MAX_LENGTH ? 'counter over-limit' : 'counter'}
+          >
+            {messageLength} / {MESSAGE_MAX_LENGTH}
+          </span>
+        </div>
         <button type="submit">Send message</button>
       </form>
     </main>
