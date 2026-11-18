@@ -37,3 +37,23 @@ it('shows the server email error under the Email field', async () => {
   expect(email.closest('label')).toContainElement(error);
   expect(email).toHaveAttribute('aria-invalid', 'true');
 });
+
+it.each([
+  ['a 400 response', () => stubValidationError('email must be an email')],
+  ['a 500 response', () => vi.stubGlobal('fetch', vi.fn().mockResolvedValue(new Response('', { status: 500 })))],
+  ['a network error', () => vi.stubGlobal('fetch', vi.fn().mockRejectedValue(new TypeError('Failed to fetch')))],
+])('keeps the form values after %s', async (_, stubFetch) => {
+  stubFetch();
+  render(<App />);
+  const name = screen.getByLabelText('Name');
+  const email = screen.getByLabelText('Email');
+  const message = screen.getByLabelText('Message');
+  await userEvent.type(name, 'Ada');
+  await userEvent.type(email, 'not-an-email');
+  await userEvent.type(message, 'Hello there');
+  await userEvent.click(screen.getByRole('button', { name: 'Send message' }));
+  await screen.findByText(/email must be an email|Something went wrong/);
+  expect(name).toHaveValue('Ada');
+  expect(email).toHaveValue('not-an-email');
+  expect(message).toHaveValue('Hello there');
+});
