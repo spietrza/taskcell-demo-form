@@ -17,10 +17,20 @@ function toFieldErrors(messages: string[]): FieldErrors {
   return errors;
 }
 
+const EMAIL_ERROR = 'Enter a valid email address';
+
+function isValidEmail(value: string): boolean {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+}
+
 export function App(): JSX.Element {
   const [errors, setErrors] = useState<FieldErrors>({});
   const [success, setSuccess] = useState(false);
   const [failure, setFailure] = useState<string | null>(null);
+  const [email, setEmail] = useState('');
+  const [emailTouched, setEmailTouched] = useState(false);
+  const emailInvalid = email !== '' && !isValidEmail(email);
+  const emailError = (emailTouched && emailInvalid ? EMAIL_ERROR : undefined) ?? errors.email;
 
   async function onSubmit(event: FormEvent<HTMLFormElement>): Promise<void> {
     event.preventDefault();
@@ -42,6 +52,8 @@ export function App(): JSX.Element {
       setErrors({});
       setSuccess(true);
       form.reset();
+      setEmail('');
+      setEmailTouched(false);
     } catch {
       setFailure('Something went wrong. Please try again.');
     }
@@ -61,15 +73,23 @@ export function App(): JSX.Element {
         </label>
         <label>
           Email
-          <input name="email" type="text" autoComplete="email" aria-invalid={!!errors.email} />
-          {errors.email && <span className="error">{errors.email}</span>}
+          <input
+            name="email"
+            type="text"
+            autoComplete="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            onBlur={() => setEmailTouched(true)}
+            aria-invalid={!!emailError}
+          />
+          {emailError && <span className="error">{emailError}</span>}
         </label>
         <label>
           Message
           <textarea name="message" rows={5} aria-invalid={!!errors.message} />
           {errors.message && <span className="error">{errors.message}</span>}
         </label>
-        <button type="submit">Send message</button>
+        <button type="submit" disabled={emailInvalid}>Send message</button>
       </form>
     </main>
   );

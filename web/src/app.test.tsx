@@ -31,9 +31,28 @@ it('shows the server email error under the Email field', async () => {
   stubValidationError('email must be an email');
   render(<App />);
   const email = screen.getByLabelText('Email');
-  await userEvent.type(email, 'not-an-email');
+  await userEvent.type(email, 'jane@example.com');
   await userEvent.click(screen.getByRole('button', { name: 'Send message' }));
   const error = await screen.findByText('email must be an email');
   expect(email.closest('label')).toContainElement(error);
   expect(email).toHaveAttribute('aria-invalid', 'true');
+});
+
+it('validates the email on the client', async () => {
+  render(<App />);
+  const email = screen.getByLabelText('Email');
+  const send = screen.getByRole('button', { name: 'Send message' });
+  await userEvent.type(email, 'not-an-email');
+  expect(screen.queryByText('Enter a valid email address')).not.toBeInTheDocument();
+  await userEvent.tab();
+  const error = screen.getByText('Enter a valid email address');
+  expect(email.closest('label')).toContainElement(error);
+  expect(email).toHaveAttribute('aria-invalid', 'true');
+  expect(send).toBeDisabled();
+
+  await userEvent.clear(email);
+  await userEvent.type(email, 'jane@example.com');
+  expect(screen.queryByText('Enter a valid email address')).not.toBeInTheDocument();
+  expect(email).toHaveAttribute('aria-invalid', 'false');
+  expect(send).toBeEnabled();
 });
