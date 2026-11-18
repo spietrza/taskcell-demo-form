@@ -23,6 +23,13 @@ button {
   font: inherit; font-weight: 600; padding: 0.7rem; border: 0; border-radius: 8px;
   color: #fff; background: #4f46e5; cursor: pointer;
 }
-button:hover { background: #4338ca; }
+button:enabled:hover { background: #4338ca; }
+button:disabled { cursor: progress; opacity: 0.8; }
+.spinner {
+  display: inline-block; width: 0.9em; height: 0.9em; margin-right: 0.5em; vertical-align: -0.1em;
+  box-sizing: border-box; border: 2px solid rgb(255 255 255 / 0.4); border-top-color: #fff; border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
 .error { color: #dc2626; font-size: 0.8rem; font-weight: 400; margin: 0; }
 .success { color: #047857; background: #ecfdf5; padding: 0.6rem 0.75rem; border-radius: 8px; margin: 0; }

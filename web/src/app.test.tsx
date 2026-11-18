@@ -37,3 +37,18 @@ it('shows the server email error under the Email field', async () => {
   expect(email.closest('label')).toContainElement(error);
   expect(email).toHaveAttribute('aria-invalid', 'true');
 });
+
+it('shows a spinner and disables the button while submitting', async () => {
+  let resolve!: (res: Response) => void;
+  vi.stubGlobal('fetch', vi.fn().mockReturnValue(new Promise<Response>((r) => (resolve = r))));
+  render(<App />);
+  const button = screen.getByRole('button', { name: 'Send message' });
+  await userEvent.click(button);
+  expect(button).toBeDisabled();
+  expect(button).toHaveAttribute('aria-busy', 'true');
+  expect(button.querySelector('.spinner')).toBeInTheDocument();
+  resolve(new Response(null, { status: 201 }));
+  expect(await screen.findByRole('status')).toHaveTextContent('Thanks! Your message was sent.');
+  expect(button).toBeEnabled();
+  expect(button.querySelector('.spinner')).not.toBeInTheDocument();
+});
